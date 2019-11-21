@@ -1,15 +1,11 @@
 package suport;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class Library {
@@ -25,15 +21,19 @@ public class Library {
 
 	public Library() {
 		System.setProperty("webdriver.chrome.driver", "C:/chromedriver.exe");
-		baseUrl = "https://www.trivago.com.br/";
+		baseUrl = "https://bancodeseries.com.br/";
 		ChromeOptions options = new ChromeOptions();
 		options.addArguments("--lang=pt");
 		driver = new ChromeDriver(options);
-		wait = new WebDriverWait(driver, 10);
+		wait = new WebDriverWait(driver, 30);
 	}
 
-	public void acessar(String baseUrl) {
+	public void login(String login, String password) {
 		driver.get(baseUrl);
+		clicarCampoByLink("Login");
+		preencherCampoByXpath("//*[@id=\"myModal\"]/div[2]/form/table/tbody/tr[1]/td[2]/input", login);
+		preencherCampoByXpath("//*[@id=\"myModal\"]/div[2]/form/table/tbody/tr[2]/td[2]/input", password);
+		clicarCampoByXpath("//*[@id=\"myModal\"]/div[3]/button");
 	}
 
 	public void waitLoading() {
@@ -65,9 +65,9 @@ public class Library {
 		return wait;
 	}
 
-	public void preencherCampo(WebDriver driver, String campo, String valor) {
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id(campo)));
-		driver.findElement(By.id(campo)).sendKeys(valor);
+	public void preencherCampoByXpath(String campo, String valor) {
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(campo)));
+		driver.findElement(By.xpath(campo)).sendKeys(valor);
 	}
 
 	public void clicarCampoByLink(String campo) {
@@ -75,8 +75,8 @@ public class Library {
 		driver.findElement(By.linkText(campo)).click();
 	}
 
-	public void clicarCampoByClass(String campo) {
-		driver.findElement(By.className(campo)).click();
+	public void clicarCampoByXpath(String campo) {
+		driver.findElement(By.xpath(campo)).click();
 	}
 
 	public String validarMensagemErroByClassEByXpath(String classe, String campo) {
@@ -84,30 +84,5 @@ public class Library {
 				.findElement(By.xpath("//*[@id=\"myModal\"]/div[2]/div")).getText();
 		return valor;
 	}
-
-	public void selectComboboxBySelectd(String elementId, int index) throws InterruptedException {
-		WebElement comboBoxDriver = driver.findElement(By.id(elementId));
-		Select comboboxSelect = new Select(comboBoxDriver);
-		comboboxSelect.selectByIndex(index);
-		Thread.sleep(600);
-	}
-
-	public void selectCombobox(String elementId, String valueCombo) throws InterruptedException {
-		WebElement dropDown = driver.findElement(By.id(elementId));
-		dropDown.sendKeys(valueCombo);
-		Thread.sleep(600);
-	}
-
-	protected int getIndexColumn(String column, WebElement table) {
-		List<WebElement> columnsList = table.findElements(By.xpath(".//th"));
-		int idColumn = -1;
-		for (int i = 0; i < columnsList.size(); i++) {
-			if (columnsList.get(i).getText().equals(column)) {
-				idColumn = i + 1;
-				break;
-			}
-		}
-		return idColumn;
-	}
-
+	
 }
